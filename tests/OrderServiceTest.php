@@ -194,5 +194,46 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
+        $maxAmountDataProvider = [150, 200];
+        foreach ($maxAmountDataProvider as $max) {
+            yield [
+                [
+                    [
+                        'id' => 1,
+                        'order' => null,
+                        'code' => 1,
+                        'price' => 100,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => null,
+                        'code' => 2,
+                        'price' => 250,
+                        'quantity' => 1,
+                    ],
+                ],
+                [
+                    'max' => $max
+                ],
+                [
+                    [
+                        'id' => 1,
+                        'order' => 1,
+                        'code' => 1,
+                        'price' => 100,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => null,
+                        'code' => 2,
+                        'price' => 250,
+                        'quantity' => 1,
+                    ],
+                ]
+            ];
+        }
+
     }
 }
