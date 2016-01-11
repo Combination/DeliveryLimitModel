@@ -4,8 +4,8 @@ namespace ReenExe\DeliveryLimitModel;
 
 class Command
 {
-    public function execute(array $input)
+    public function execute(array $data, array $limit = [])
     {
-        return $input;
+        return $data;
     }
 }
