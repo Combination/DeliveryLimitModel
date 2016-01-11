@@ -31,6 +31,14 @@ class OrderService
             return call_user_func_array('array_merge', $orderGroupList);
         }
 
+        $config = array_merge(
+            [
+                'min' => 0,
+                'max' => PHP_INT_MAX,
+            ],
+            $config
+        );
+
         return $baskets;
     }
 
