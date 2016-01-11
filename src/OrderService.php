@@ -39,9 +39,7 @@ class OrderService
             $config
         );
 
-        $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
-
-        if (count($orderGroupAmountMap) === 1) {
+        if (count($orderGroupList) === 1) {
             $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
 
             $orderGroupAmountMap[$nextOrderId] = 0;
