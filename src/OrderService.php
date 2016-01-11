@@ -51,7 +51,7 @@ class OrderService
 
                 $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
 
-                if ($config['min'] <= $orderGroupAmount && $orderGroupAmount <= $config['max']) {
+                if ($this->inRange($config, $orderGroupAmount)) {
                     $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
                 } elseif ($config['min'] <= $basketAmount && $basketAmount <= $config['max']) {
                     $nextOrderId += 1;
@@ -92,5 +92,10 @@ class OrderService
             }
         }
         return $result;
+    }
+
+    private function inRange(array $config, $amount)
+    {
+        return $config['min'] <= $amount && $amount <= $config['max'];
     }
 }
