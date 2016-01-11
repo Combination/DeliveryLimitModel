@@ -46,5 +46,27 @@ class BlankTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ];
+
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => null,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+            ],
+            [
+
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+            ]
+        ];
     }
 }
