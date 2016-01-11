@@ -4,8 +4,23 @@ use ReenExe\DeliveryLimitModel\Command;
 
 class BlankTest extends \PHPUnit_Framework_TestCase
 {
-    public function test()
+    /**
+     * @dataProvider dataProvider
+     * @param array $input
+     * @param array $output
+     */
+    public function test(array $input, array $output)
     {
-        new Command();
+        $command = new Command();
+
+        $this->assertSame($command->execute($input), $output);
+    }
+
+    public function dataProvider()
+    {
+        yield [
+            [],
+            []
+        ];
     }
 }
