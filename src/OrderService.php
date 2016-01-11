@@ -44,7 +44,23 @@ class OrderService
         if (count($orderGroupAmountMap) === 1) {
             $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
 
+            $orderGroupAmountMap[$nextOrderId] = 0;
+
             foreach (array_keys($orderGroupList[null]) as $index) {
+                $basket = $orderGroupList[null][$index];
+
+                $basketAmount = $basket['price'] * $basket['quantity'];
+
+                $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
+
+                if ($config['min'] <= $orderGroupAmount && $orderGroupAmount <= $config['max']) {
+                    $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
+                } elseif ($config['min'] <= $basketAmount && $basketAmount <= $config['max']) {
+                    $nextOrderId += 1;
+                } else {
+                    continue;
+                }
+
                 $orderGroupList[null][$index]['order'] = $nextOrderId;
             }
 
