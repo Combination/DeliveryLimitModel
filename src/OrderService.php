@@ -2,9 +2,14 @@
 
 namespace ReenExe\DeliveryLimitModel;
 
-class Command
+class OrderService
 {
-    public function execute(array $baskets, array $config)
+    /**
+     * @param array $baskets
+     * @param array $config
+     * @return array
+     */
+    public function create(array $baskets, array $config)
     {
         if (empty($baskets)) {
             return [];

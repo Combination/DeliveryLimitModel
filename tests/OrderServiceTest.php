@@ -1,8 +1,8 @@
 <?php
 
-use ReenExe\DeliveryLimitModel\Command;
+use ReenExe\DeliveryLimitModel\OrderService;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class OrderServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataProvider
@@ -12,9 +12,9 @@ class CommandTest extends \PHPUnit_Framework_TestCase
      */
     public function test(array $input, array $config, array $output)
     {
-        $command = new Command();
+        $command = new OrderService();
 
-        $this->assertSame($command->execute($input, $config), $output);
+        $this->assertSame($command->create($input, $config), $output);
     }
 
     public function dataProvider()
