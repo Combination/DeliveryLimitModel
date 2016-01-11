@@ -2,7 +2,7 @@
 
 use ReenExe\DeliveryLimitModel\Command;
 
-class BlankTest extends \PHPUnit_Framework_TestCase
+class CommandTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataProvider
