@@ -12,13 +12,15 @@ class Command
 
         $orderGroupList = $this->groupByOrder($baskets);
 
-        if (empty($config)) {
-            if (isset($orderGroupList[null])) {
-                $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
+        if (empty($orderGroupList[null])) {
+            return $baskets;
+        }
 
-                foreach (array_keys($orderGroupList[null]) as $index) {
-                    $orderGroupList[null][$index]['order'] = $nextOrderId;
-                }
+        if (empty($config)) {
+            $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
+
+            foreach (array_keys($orderGroupList[null]) as $index) {
+                $orderGroupList[null][$index]['order'] = $nextOrderId;
             }
 
             return call_user_func_array('array_merge', $orderGroupList);

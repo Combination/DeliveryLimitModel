@@ -25,28 +25,18 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             []
         ];
 
-        yield [
-            [
-                [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ],
-            [
+        $item = [
+            'id' => 1,
+            'order' => 1,
+            'code' => 1,
+            'price' => 1,
+            'quantity' => 1,
+        ];
 
-            ],
-            [
-                [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ]
+        yield [
+            [$item],
+            [],
+            [$item]
         ];
 
         yield [
