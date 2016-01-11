@@ -153,5 +153,32 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        $minAmountDataProvider = [150, 200, 200];
+        foreach ($minAmountDataProvider as $min) {
+            yield [
+                [
+                    [
+                        'id' => 1,
+                        'order' => null,
+                        'code' => 1,
+                        'price' => 100,
+                        'quantity' => 1,
+                    ],
+                ],
+                [
+                    'min' => $min
+                ],
+                [
+                    [
+                        'id' => 1,
+                        'order' => null,
+                        'code' => 1,
+                        'price' => 100,
+                        'quantity' => 1,
+                    ],
+                ]
+            ];
+        }
+
     }
 }
