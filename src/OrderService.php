@@ -39,6 +39,18 @@ class OrderService
             $config
         );
 
+        $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
+
+        if (count($orderGroupAmountMap) === 1) {
+            $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
+
+            foreach (array_keys($orderGroupList[null]) as $index) {
+                $orderGroupList[null][$index]['order'] = $nextOrderId;
+            }
+
+            return call_user_func_array('array_merge', $orderGroupList);
+        }
+
         return $baskets;
     }
 
@@ -54,5 +66,17 @@ class OrderService
     private function getMaxOrderId(array $orderGroupList)
     {
         return max(array_keys($orderGroupList));
+    }
+
+    private function getOrderGroupAmountMap(array $orderGroupList)
+    {
+        $result = [];
+        foreach ($orderGroupList as $orderId => $orderGroup) {
+            $result[$orderId] = 0;
+            foreach ($orderGroup as $basket) {
+                $result[$orderId] += $basket['price'] * $basket['quantity'];
+            }
+        }
+        return $result;
     }
 }
