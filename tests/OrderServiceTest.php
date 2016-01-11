@@ -129,5 +129,29 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => null,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+            ],
+            [
+                'min' => 150
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => null,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+            ]
+        ];
+
     }
 }
