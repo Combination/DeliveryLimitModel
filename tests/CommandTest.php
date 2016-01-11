@@ -30,6 +30,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
                 [
                     'id' => 1,
                     'order' => 1,
+                    'code' => 1,
                     'price' => 1,
                     'quantity' => 1,
                 ],
@@ -41,6 +42,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
                 [
                     'id' => 1,
                     'order' => 1,
+                    'code' => 1,
                     'price' => 1,
                     'quantity' => 1,
                 ],
@@ -52,6 +54,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
                 [
                     'id' => 1,
                     'order' => null,
+                    'code' => 1,
                     'price' => 1,
                     'quantity' => 1,
                 ],
@@ -63,6 +66,45 @@ class CommandTest extends \PHPUnit_Framework_TestCase
                 [
                     'id' => 1,
                     'order' => 1,
+                    'code' => 1,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+            ]
+        ];
+
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => null,
+                    'code' => 2,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+            ],
+            [
+
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 1,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => 1,
+                    'code' => 2,
                     'price' => 1,
                     'quantity' => 1,
                 ],

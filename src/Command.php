@@ -14,7 +14,7 @@ class Command
 
         if (empty($config)) {
             if (isset($orderGroupList[null])) {
-                $nextOrderId = $this->generateNextOrderId($orderGroupList);
+                $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
 
                 foreach (array_keys($orderGroupList[null]) as $index) {
                     $orderGroupList[null][$index]['order'] = $nextOrderId;
@@ -36,8 +36,8 @@ class Command
         return $result;
     }
 
-    private function generateNextOrderId(array $orderGroupList)
+    private function getMaxOrderId(array $orderGroupList)
     {
-        return max(array_keys($orderGroupList)) + 1;
+        return max(array_keys($orderGroupList));
     }
 }
