@@ -190,7 +190,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
                 [
                     [
                         'id' => 1,
-                        'order' => null,
+                        'order' => 1,
                         'code' => 1,
                         'price' => 100,
                         'quantity' => 1,
