@@ -242,5 +242,39 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
+        /**
+         * Якщо в корзині є продукт з кількістю 2+, що перевищує максимальний ліміт
+         * то маємо розділити в різні замовлення.
+         */
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => null,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 2,
+                ],
+            ],
+            [
+                'max' => 100
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => 2,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+            ]
+        ];
     }
 }
