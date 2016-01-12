@@ -277,6 +277,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        // Після розділення - залишаеться продукт виходить за межі лімітів
         yield [
             [
                 [
