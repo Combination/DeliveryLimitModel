@@ -40,7 +40,7 @@ class OrderCreateAction
         }
 
         if (empty($this->config)) {
-            $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
+            $nextOrderId = $this->getNextOrderId($orderGroupList);
 
             foreach (array_keys($orderGroupList[null]) as $index) {
                 $orderGroupList[null][$index]['order'] = $nextOrderId;
@@ -49,16 +49,10 @@ class OrderCreateAction
             return call_user_func_array('array_merge', $orderGroupList);
         }
 
-        $config = array_merge(
-            [
-                'min' => 0,
-                'max' => PHP_INT_MAX,
-            ],
-            $this->config
-        );
+        $this->rebuildConfig();
 
         if (count($orderGroupList) === 1) {
-            $nextOrderId = $this->getMaxOrderId($orderGroupList) ?: 1;
+            $nextOrderId = $this->getNextOrderId($orderGroupList);
 
             $orderGroupAmountMap[$nextOrderId] = 0;
 
@@ -69,9 +63,9 @@ class OrderCreateAction
 
                 $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
 
-                if ($this->inRange($config, $orderGroupAmount)) {
+                if ($this->inLimit($orderGroupAmount)) {
                     $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
-                } elseif ($config['min'] <= $basketAmount && $basketAmount <= $config['max']) {
+                } elseif ($this->inLimit($basketAmount)) {
                     $nextOrderId += 1;
                 } else {
                     continue;
@@ -100,6 +94,11 @@ class OrderCreateAction
         return max(array_keys($orderGroupList));
     }
 
+    private function getNextOrderId(array $orderGroupList)
+    {
+        return $this->getMaxOrderId($orderGroupList) ?: 1;
+    }
+
     private function getOrderGroupAmountMap(array $orderGroupList)
     {
         $result = [];
@@ -112,8 +111,19 @@ class OrderCreateAction
         return $result;
     }
 
-    private function inRange(array $config, $amount)
+    private function inLimit($amount)
     {
-        return $config['min'] <= $amount && $amount <= $config['max'];
+        return $this->config['min'] <= $amount && $amount <= $this->config['max'];
+    }
+
+    private function rebuildConfig()
+    {
+        $this->config = array_merge(
+            [
+                'min' => 0,
+                'max' => PHP_INT_MAX,
+            ],
+            $this->config
+        );
     }
 }
