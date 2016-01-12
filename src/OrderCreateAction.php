@@ -58,8 +58,8 @@ class OrderCreateAction
 
             $result = [];
             $orderGroup = $orderGroupList[null];
-            foreach ($orderGroup as $basket) {
-
+            for ($index = 0; $index < count($orderGroup); ++$index) {
+                $basket = $orderGroup[$index];
                 $basketAmount = $basket['price'] * $basket['quantity'];
 
                 $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
