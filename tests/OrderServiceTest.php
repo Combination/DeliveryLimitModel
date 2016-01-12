@@ -19,6 +19,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
 
     public function dataProvider()
     {
+        // Передаємо пустий кошик
         yield [
             [],
             [],
@@ -33,12 +34,14 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             'quantity' => 1,
         ];
 
+        // Передаємо вже готові замовлення, без нових товарів
         yield [
             [$item],
             [],
             [$item]
         ];
 
+        // Без лімітів - створюємо замовлення
         yield [
             [
                 [
@@ -63,6 +66,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        // Без лімітів - об’єднуємо з існуючим замовленням
         yield [
             [
                 [
@@ -101,8 +105,8 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        // Існує нижній ліміт і замовлення його задовольняє
         $minAmountDataProvider = [20, 50, 100];
-
         foreach ($minAmountDataProvider as $min) {
             yield [
                 [
@@ -129,6 +133,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
+        // Намагаємось створити замовлення меньше можливого
         yield [
             [
                 [
@@ -153,6 +158,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        // Тільки частина корзини може бути оформлена в замовлення, а залишок меньше ліміта
         $minAmountDataProvider = [150, 200];
         foreach ($minAmountDataProvider as $min) {
             yield [
@@ -194,6 +200,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
+        // Тільки частина корзини може бути оформлена в замовлення, а в залишку товар, який більше ліміта
         $maxAmountDataProvider = [150, 200];
         foreach ($maxAmountDataProvider as $max) {
             yield [
