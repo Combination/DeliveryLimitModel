@@ -14,6 +14,8 @@ class OrderCreateAction
      */
     private $baskets;
 
+    private $nextBasketId;
+
     /**
      * @param array $config
      * @param array $baskets
@@ -54,7 +56,7 @@ class OrderCreateAction
         if (count($orderGroupList) === 1) {
             $nextOrderId = $this->getNextOrderId($orderGroupList);
 
-            $orderGroupAmountMap[$nextOrderId] = 0;
+            $orderGroupAmountMap = new DefaultDictionary(0);
 
             $result = [];
             $orderGroup = $orderGroupList[null];
@@ -70,6 +72,22 @@ class OrderCreateAction
                 } elseif ($this->inLimit($basketAmount)) {
                     $nextOrderId += 1;
                     $basket['order'] = $nextOrderId;
+                } elseif ($basket['quantity'] > 1) {
+                    $restAmount = $this->config['max'] - $orderGroupAmountMap[$nextOrderId];
+
+                    $possibleQuantity = (int)floor($restAmount / $basket['price']);
+                    $restQuantity = $basket['quantity'] - $possibleQuantity;
+
+                    $basket['quantity'] = $possibleQuantity;
+                    $orderGroupAmountMap[$nextOrderId] += $basket['price'] * $basket['quantity'];
+                    $basket['order'] = $nextOrderId;
+
+                    $nextOrderId += 1;
+
+                    $restBasket = $basket;
+                    $restBasket['quantity'] = $restQuantity;
+                    $restBasket['id'] = $this->getNextBasketId();
+                    $orderGroup[] = $restBasket;
                 }
 
                 $result[] = $basket;
@@ -126,5 +144,12 @@ class OrderCreateAction
             ],
             $this->config
         );
+    }
+
+    private function getNextBasketId()
+    {
+        return $this->nextBasketId
+            ? ++$this->nextBasketId
+            : $this->nextBasketId = max(array_column($this->baskets, 'id')) + 1;
     }
 }
