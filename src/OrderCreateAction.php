@@ -56,8 +56,9 @@ class OrderCreateAction
 
             $orderGroupAmountMap[$nextOrderId] = 0;
 
-            foreach (array_keys($orderGroupList[null]) as $index) {
-                $basket = $orderGroupList[null][$index];
+            $result = [];
+            $orderGroup = $orderGroupList[null];
+            foreach ($orderGroup as $basket) {
 
                 $basketAmount = $basket['price'] * $basket['quantity'];
 
@@ -65,16 +66,16 @@ class OrderCreateAction
 
                 if ($this->inLimit($orderGroupAmount)) {
                     $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
+                    $basket['order'] = $nextOrderId;
                 } elseif ($this->inLimit($basketAmount)) {
                     $nextOrderId += 1;
-                } else {
-                    continue;
+                    $basket['order'] = $nextOrderId;
                 }
 
-                $orderGroupList[null][$index]['order'] = $nextOrderId;
+                $result[] = $basket;
             }
 
-            return call_user_func_array('array_merge', $orderGroupList);
+            return $result;
         }
 
         return $this->baskets;
