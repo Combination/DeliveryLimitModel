@@ -76,18 +76,17 @@ class OrderCreateAction
                     $restAmount = $this->config['max'] - $orderGroupAmountMap[$nextOrderId];
 
                     $possibleQuantity = (int)floor($restAmount / $basket['price']);
+
                     $restQuantity = $basket['quantity'] - $possibleQuantity;
-
-                    $basket['quantity'] = $possibleQuantity;
-                    $orderGroupAmountMap[$nextOrderId] += $basket['price'] * $basket['quantity'];
-                    $basket['order'] = $nextOrderId;
-
-                    $nextOrderId += 1;
-
                     $restBasket = $basket;
                     $restBasket['quantity'] = $restQuantity;
                     $restBasket['id'] = $this->getNextBasketId();
                     $orderGroup[] = $restBasket;
+
+                    $basket['quantity'] = $possibleQuantity;
+                    $orderGroupAmountMap[$nextOrderId] += $basket['price'] * $basket['quantity'];
+                    $basket['order'] = $nextOrderId;
+                    $nextOrderId += 1;
                 }
 
                 $result[] = $basket;
