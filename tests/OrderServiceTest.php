@@ -162,9 +162,6 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         // Тільки частина корзини може бути оформлена в замовлення, а залишок меньше ліміта
-        /**
-         * TODO: this has mistake
-         */
         $minAmountDataProvider = [150, 200];
         foreach ($minAmountDataProvider as $min) {
             yield [
