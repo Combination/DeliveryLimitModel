@@ -67,43 +67,46 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         // Без лімітів - об’єднуємо з існуючим замовленням
-        yield [
-            [
+        $orderIdList = [1, 250, 1025];
+        foreach ($orderIdList as $orderId) {
+            yield [
                 [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
+                    [
+                        'id' => 1,
+                        'order' => $orderId,
+                        'code' => 1,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => null,
+                        'code' => 2,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
-                    'id' => 2,
-                    'order' => null,
-                    'code' => 2,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ],
-            [
 
-            ],
-            [
-                [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
                 ],
                 [
-                    'id' => 2,
-                    'order' => 1,
-                    'code' => 2,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ]
-        ];
+                    [
+                        'id' => 1,
+                        'order' => $orderId,
+                        'code' => 1,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => $orderId,
+                        'code' => 2,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                ]
+            ];
+        }
 
         // Існує нижній ліміт і замовлення його задовольняє
         $minAmountDataProvider = [20, 50, 100];
@@ -159,6 +162,9 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         // Тільки частина корзини може бути оформлена в замовлення, а залишок меньше ліміта
+        /**
+         * TODO: this has mistake
+         */
         $minAmountDataProvider = [150, 200];
         foreach ($minAmountDataProvider as $min) {
             yield [
