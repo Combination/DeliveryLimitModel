@@ -312,5 +312,57 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ];
+
+        /**
+         * Exist:
+         * min ⩽ x ⩽ max
+         * y < min
+         * min ⩽ 2y ⩽ max
+         * min ⩽ x + y ⩽ max
+         *
+         * Data:
+         * min: 100
+         * max: 150
+         * x = 100
+         * y = 50
+         */
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => null,
+                    'code' => 2,
+                    'price' => 50,
+                    'quantity' => 2,
+                ],
+            ],
+            [
+                'min' => 100,
+                'max' => 150
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => 2,
+                    'code' => 2,
+                    'price' => 50,
+                    'quantity' => 2,
+                ],
+            ]
+        ];
     }
 }
