@@ -318,7 +318,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
          * min ⩽ x ⩽ max
          * y < min
          * min ⩽ 2y ⩽ max
-         * min ⩽ x + y ⩽ max
+         * min ⩽ x + y ⩽ max < x + 2y
          *
          * Data:
          * min: 100
