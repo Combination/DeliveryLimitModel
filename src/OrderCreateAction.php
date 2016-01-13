@@ -56,10 +56,20 @@ class OrderCreateAction
         if (count($orderGroupList) === 1) {
             $nextOrderId = $this->getNextOrderId($orderGroupList);
 
-            $orderGroupAmountMap = new DefaultDictionary(0);
+            $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
+            $orderGroup = $orderGroupList[null];
 
             $result = [];
-            $orderGroup = $orderGroupList[null];
+            if ($this->inLimit($orderGroupAmountMap[null])) {
+                foreach ($orderGroup as $basket) {
+                    $basket['order'] = $nextOrderId;
+                    $result[] = $basket;
+                }
+                return $result;
+            }
+
+            $orderGroupAmountMap = new DefaultDictionary(0);
+
             for ($index = 0; $index < count($orderGroup); ++$index) {
                 $basket = $orderGroup[$index];
                 $basketAmount = $basket['price'] * $basket['quantity'];
@@ -93,6 +103,19 @@ class OrderCreateAction
             }
 
             return $result;
+        }
+
+        $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
+        if ($this->inLimit($orderGroupAmountMap[null])) {
+            $result = array_column($this->baskets, null, 'id');
+            $freeOrderGroup = $orderGroupList[null];
+            $nextOrderId = $this->getMaxOrderId($orderGroupList) + 1;
+            foreach ($freeOrderGroup as $basket) {
+                $basket['order'] = $nextOrderId;
+                $result[$basket['id']] = $basket;
+            }
+            ksort($result);
+            return array_values($result);
         }
 
         return $this->baskets;

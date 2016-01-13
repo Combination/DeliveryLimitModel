@@ -67,43 +67,46 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         ];
 
         // Без лімітів - об’єднуємо з існуючим замовленням
-        yield [
-            [
+        $orderIdList = [1, 250, 1025];
+        foreach ($orderIdList as $orderId) {
+            yield [
                 [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
+                    [
+                        'id' => 1,
+                        'order' => $orderId,
+                        'code' => 1,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => null,
+                        'code' => 2,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
                 ],
                 [
-                    'id' => 2,
-                    'order' => null,
-                    'code' => 2,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ],
-            [
 
-            ],
-            [
-                [
-                    'id' => 1,
-                    'order' => 1,
-                    'code' => 1,
-                    'price' => 1,
-                    'quantity' => 1,
                 ],
                 [
-                    'id' => 2,
-                    'order' => 1,
-                    'code' => 2,
-                    'price' => 1,
-                    'quantity' => 1,
-                ],
-            ]
-        ];
+                    [
+                        'id' => 1,
+                        'order' => $orderId,
+                        'code' => 1,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                    [
+                        'id' => 2,
+                        'order' => $orderId,
+                        'code' => 2,
+                        'price' => 1,
+                        'quantity' => 1,
+                    ],
+                ]
+            ];
+        }
 
         // Існує нижній ліміт і замовлення його задовольняє
         $minAmountDataProvider = [20, 50, 100];
@@ -184,7 +187,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
                 [
                     [
                         'id' => 1,
-                        'order' => null,
+                        'order' => 1,
                         'code' => 1,
                         'price' => 100,
                         'quantity' => 1,
@@ -277,6 +280,7 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        // Після розділення - залишаеться продукт виходить за межі лімітів
         yield [
             [
                 [
@@ -305,6 +309,58 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
                     'code' => 1,
                     'price' => 50,
                     'quantity' => 1,
+                ],
+            ]
+        ];
+
+        /**
+         * Exist:
+         * min ⩽ x ⩽ max
+         * y < min
+         * min ⩽ 2y ⩽ max
+         * min ⩽ x + y ⩽ max
+         *
+         * Data:
+         * min: 100
+         * max: 150
+         * x = 100
+         * y = 50
+         */
+        yield [
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => null,
+                    'code' => 2,
+                    'price' => 50,
+                    'quantity' => 2,
+                ],
+            ],
+            [
+                'min' => 100,
+                'max' => 150
+            ],
+            [
+                [
+                    'id' => 1,
+                    'order' => 1,
+                    'code' => 1,
+                    'price' => 100,
+                    'quantity' => 1,
+                ],
+                [
+                    'id' => 2,
+                    'order' => 2,
+                    'code' => 2,
+                    'price' => 50,
+                    'quantity' => 2,
                 ],
             ]
         ];
