@@ -106,7 +106,23 @@ class OrderCreateAction
         }
 
         $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
-        if ($this->inLimit($orderGroupAmountMap[null])) {
+
+        $freeOrderGroupAmount = $orderGroupAmountMap[null];
+        $orderIdList = array_filter(array_keys($orderGroupAmountMap));
+        foreach ($orderIdList as $orderId) {
+            if ($this->inLimit($orderGroupAmountMap[$orderId] + $freeOrderGroupAmount)) {
+                $result = array_column($this->baskets, null, 'id');
+                $freeOrderGroup = $orderGroupList[null];
+                foreach ($freeOrderGroup as $basket) {
+                    $basket['order'] = $orderId;
+                    $result[$basket['id']] = $basket;
+                }
+                ksort($result);
+                return array_values($result);
+            }
+        }
+
+        if ($this->inLimit($freeOrderGroupAmount)) {
             $result = array_column($this->baskets, null, 'id');
             $freeOrderGroup = $orderGroupList[null];
             $nextOrderId = $this->getMaxOrderId($orderGroupList) + 1;
