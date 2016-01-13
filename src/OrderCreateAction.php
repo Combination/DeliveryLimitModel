@@ -117,8 +117,7 @@ class OrderCreateAction
                     $basket['order'] = $orderId;
                     $result[$basket['id']] = $basket;
                 }
-                ksort($result);
-                return array_values($result);
+                return $this->getSorted($result);
             }
         }
 
@@ -130,8 +129,7 @@ class OrderCreateAction
                 $basket['order'] = $nextOrderId;
                 $result[$basket['id']] = $basket;
             }
-            ksort($result);
-            return array_values($result);
+            return $this->getSorted($result);
         }
 
         return $this->baskets;
@@ -189,5 +187,11 @@ class OrderCreateAction
         return $this->nextBasketId
             ? ++$this->nextBasketId
             : $this->nextBasketId = max(array_column($this->baskets, 'id')) + 1;
+    }
+
+    private function getSorted(array $baskets)
+    {
+        ksort($baskets);
+        return array_values($baskets);
     }
 }
