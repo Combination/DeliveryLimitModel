@@ -53,56 +53,8 @@ class OrderCreateAction
 
         $this->rebuildConfig();
 
-        if (count($orderGroupList) === 1) {
-            $nextOrderId = $this->getNextOrderId($orderGroupList);
-
-            $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
-            $orderGroup = $orderGroupList[null];
-
-            $result = [];
-            if ($this->inLimit($orderGroupAmountMap[null])) {
-                foreach ($orderGroup as $basket) {
-                    $basket['order'] = $nextOrderId;
-                    $result[] = $basket;
-                }
-                return $result;
-            }
-
-            $orderGroupAmountMap = new DefaultDictionary(0);
-
-            for ($index = 0; $index < count($orderGroup); ++$index) {
-                $basket = $orderGroup[$index];
-                $basketAmount = $basket['price'] * $basket['quantity'];
-
-                $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
-
-                if ($this->inLimit($orderGroupAmount)) {
-                    $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
-                    $basket['order'] = $nextOrderId;
-                } elseif ($this->inLimit($basketAmount)) {
-                    $nextOrderId += 1;
-                    $basket['order'] = $nextOrderId;
-                } elseif ($basket['quantity'] > 1) {
-                    $restAmount = $this->config['max'] - $orderGroupAmountMap[$nextOrderId];
-
-                    $possibleQuantity = (int)floor($restAmount / $basket['price']);
-
-                    $restQuantity = $basket['quantity'] - $possibleQuantity;
-                    $restBasket = $basket;
-                    $restBasket['quantity'] = $restQuantity;
-                    $restBasket['id'] = $this->getNextBasketId();
-                    $orderGroup[] = $restBasket;
-
-                    $basket['quantity'] = $possibleQuantity;
-                    $orderGroupAmountMap[$nextOrderId] += $basket['price'] * $basket['quantity'];
-                    $basket['order'] = $nextOrderId;
-                    $nextOrderId += 1;
-                }
-
-                $result[] = $basket;
-            }
-
-            return $result;
+        if ($this->isFirstFreeBaskets($orderGroupList)) {
+            return $this->createFirstOrders($orderGroupList);
         }
 
         $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
@@ -111,30 +63,74 @@ class OrderCreateAction
         $orderIdList = array_filter(array_keys($orderGroupAmountMap));
         foreach ($orderIdList as $orderId) {
             if ($this->inLimit($orderGroupAmountMap[$orderId] + $freeOrderGroupAmount)) {
-                $result = array_column($this->baskets, null, 'id');
-                $freeOrderGroup = $orderGroupList[null];
-                foreach ($freeOrderGroup as $basket) {
-                    $basket['order'] = $orderId;
-                    $result[$basket['id']] = $basket;
-                }
-                ksort($result);
-                return array_values($result);
+                return $this->setFreeBasketsOrderId($orderGroupList[null], $orderId);
             }
         }
 
         if ($this->inLimit($freeOrderGroupAmount)) {
-            $result = array_column($this->baskets, null, 'id');
-            $freeOrderGroup = $orderGroupList[null];
             $nextOrderId = $this->getMaxOrderId($orderGroupList) + 1;
-            foreach ($freeOrderGroup as $basket) {
-                $basket['order'] = $nextOrderId;
-                $result[$basket['id']] = $basket;
-            }
-            ksort($result);
-            return array_values($result);
+            return $this->setFreeBasketsOrderId($orderGroupList[null], $nextOrderId);
         }
 
         return $this->baskets;
+    }
+
+    private function isFirstFreeBaskets($orderGroupList)
+    {
+        return count($orderGroupList) === 1;
+    }
+
+    private function createFirstOrders(array $orderGroupList)
+    {
+        $nextOrderId = 1;
+
+        $orderGroupAmountMap = $this->getOrderGroupAmountMap($orderGroupList);
+        $orderGroup = $orderGroupList[null];
+
+        $result = [];
+        if ($this->inLimit($orderGroupAmountMap[null])) {
+            foreach ($orderGroup as $basket) {
+                $basket['order'] = $nextOrderId;
+                $result[] = $basket;
+            }
+            return $result;
+        }
+
+        $orderGroupAmountMap = new DefaultDictionary(0);
+
+        for ($index = 0; $index < count($orderGroup); ++$index) {
+            $basket = $orderGroup[$index];
+            $basketAmount = $basket['price'] * $basket['quantity'];
+
+            $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
+
+            if ($this->inLimit($orderGroupAmount)) {
+                $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
+                $basket['order'] = $nextOrderId;
+            } elseif ($this->inLimit($basketAmount)) {
+                $nextOrderId += 1;
+                $basket['order'] = $nextOrderId;
+            } elseif ($basket['quantity'] > 1) {
+                $restAmount = $this->config['max'] - $orderGroupAmountMap[$nextOrderId];
+
+                $possibleQuantity = (int)floor($restAmount / $basket['price']);
+
+                $restQuantity = $basket['quantity'] - $possibleQuantity;
+                $restBasket = $basket;
+                $restBasket['quantity'] = $restQuantity;
+                $restBasket['id'] = $this->getNextBasketId();
+                $orderGroup[] = $restBasket;
+
+                $basket['quantity'] = $possibleQuantity;
+                $orderGroupAmountMap[$nextOrderId] += $basket['price'] * $basket['quantity'];
+                $basket['order'] = $nextOrderId;
+                $nextOrderId += 1;
+            }
+
+            $result[] = $basket;
+        }
+
+        return $result;
     }
 
     private function groupByOrder(array $baskets)
@@ -189,5 +185,21 @@ class OrderCreateAction
         return $this->nextBasketId
             ? ++$this->nextBasketId
             : $this->nextBasketId = max(array_column($this->baskets, 'id')) + 1;
+    }
+
+    private function setFreeBasketsOrderId(array $orderGroup, $orderId)
+    {
+        $result = array_column($this->baskets, null, 'id');
+        foreach ($orderGroup as $basket) {
+            $basket['order'] = $orderId;
+            $result[$basket['id']] = $basket;
+        }
+        return $this->getSorted($result);
+    }
+
+    private function getSorted(array $baskets)
+    {
+        ksort($baskets);
+        return array_values($baskets);
     }
 }
