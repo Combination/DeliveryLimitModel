@@ -20,10 +20,10 @@ class OrderCreateAction
      * @param array $config
      * @param array $baskets
      */
-    public function __construct(array $config, array $baskets)
+    public function __construct(array $baskets, array $config)
     {
-        $this->config = $config;
         $this->baskets = $baskets;
+        $this->config = $config;
     }
 
     /**
