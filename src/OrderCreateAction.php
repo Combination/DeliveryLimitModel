@@ -60,12 +60,12 @@ class OrderCreateAction
         $freeOrderGroupAmount = $orderGroupAmountMap[null];
         $orderIdList = array_filter(array_keys($orderGroupAmountMap));
         foreach ($orderIdList as $orderId) {
-            if ($this->inLimit($orderGroupAmountMap[$orderId] + $freeOrderGroupAmount)) {
+            if ($this->config->inLimit($orderGroupAmountMap[$orderId] + $freeOrderGroupAmount)) {
                 return $this->setFreeBasketsOrderId($orderGroupList[null], $orderId);
             }
         }
 
-        if ($this->inLimit($freeOrderGroupAmount)) {
+        if ($this->config->inLimit($freeOrderGroupAmount)) {
             $nextOrderId = $this->getMaxOrderId($orderGroupList) + 1;
             return $this->setFreeBasketsOrderId($orderGroupList[null], $nextOrderId);
         }
@@ -86,7 +86,7 @@ class OrderCreateAction
         $orderGroup = $orderGroupList[null];
 
         $result = [];
-        if ($this->inLimit($orderGroupAmountMap[null])) {
+        if ($this->config->inLimit($orderGroupAmountMap[null])) {
             foreach ($orderGroup as $basket) {
                 $basket['order'] = $nextOrderId;
                 $result[] = $basket;
@@ -102,10 +102,10 @@ class OrderCreateAction
 
             $orderGroupAmount = $orderGroupAmountMap[$nextOrderId] + $basketAmount;
 
-            if ($this->inLimit($orderGroupAmount)) {
+            if ($this->config->inLimit($orderGroupAmount)) {
                 $orderGroupAmountMap[$nextOrderId] = $orderGroupAmount;
                 $basket['order'] = $nextOrderId;
-            } elseif ($this->inLimit($basketAmount)) {
+            } elseif ($this->config->inLimit($basketAmount)) {
                 $nextOrderId += 1;
                 $basket['order'] = $nextOrderId;
             } elseif ($basket['quantity'] > 1) {
@@ -160,11 +160,6 @@ class OrderCreateAction
             }
         }
         return $result;
-    }
-
-    private function inLimit($amount)
-    {
-        return $this->config->inLimit($amount);
     }
 
     private function getNextBasketId()
