@@ -5,7 +5,7 @@ namespace ReenExe\DeliveryLimitModel;
 class OrderCreateAction
 {
     /**
-     * @var array
+     * @var DeliveryLimitConfig
      */
     private $config;
 
@@ -20,7 +20,7 @@ class OrderCreateAction
      * @param array $config
      * @param array $baskets
      */
-    public function __construct(array $baskets, array $config)
+    public function __construct(array $baskets, DeliveryLimitConfig $config)
     {
         $this->baskets = $baskets;
         $this->config = $config;
@@ -41,7 +41,7 @@ class OrderCreateAction
             return $this->baskets;
         }
 
-        if (empty($this->config)) {
+        if ($this->config->isEmpty()) {
             $nextOrderId = $this->getNextOrderId($orderGroupList);
 
             foreach (array_keys($orderGroupList[null]) as $index) {
@@ -50,8 +50,6 @@ class OrderCreateAction
 
             return call_user_func_array('array_merge', $orderGroupList);
         }
-
-        $this->rebuildConfig();
 
         if ($this->isFirstFreeBaskets($orderGroupList)) {
             return $this->createFirstOrders($orderGroupList);
@@ -111,7 +109,7 @@ class OrderCreateAction
                 $nextOrderId += 1;
                 $basket['order'] = $nextOrderId;
             } elseif ($basket['quantity'] > 1) {
-                $restAmount = $this->config['max'] - $orderGroupAmountMap[$nextOrderId];
+                $restAmount = $this->config->getMax() - $orderGroupAmountMap[$nextOrderId];
 
                 $possibleQuantity = (int)floor($restAmount / $basket['price']);
 
@@ -166,18 +164,7 @@ class OrderCreateAction
 
     private function inLimit($amount)
     {
-        return $this->config['min'] <= $amount && $amount <= $this->config['max'];
-    }
-
-    private function rebuildConfig()
-    {
-        $this->config = array_merge(
-            [
-                'min' => 0,
-                'max' => PHP_INT_MAX,
-            ],
-            $this->config
-        );
+        return $this->config->inLimit($amount);
     }
 
     private function getNextBasketId()
