@@ -11,7 +11,7 @@ class OrderService
      */
     public function create(array $baskets, array $config)
     {
-        $action = new OrderCreateAction($config, $baskets);
+        $action = new OrderCreateAction($baskets, new DeliveryLimitConfig($config));
 
         return $action->getResponse();
     }
